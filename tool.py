@@ -18,7 +18,7 @@ if sys.version_info.major == 3:
             f"Not supported: [{sys.version}] yet\nEnter to quit\nSorry for any inconvenience caused")
         sys.exit(1)
 try:
-    from src.tkui.tool import *
+    from src.qtui.tool import *
 except Exception as e:
     input(f"Sorry! We cannot init the tool.\nPlease clone source again!\n{e}")
     sys.exit(1)
