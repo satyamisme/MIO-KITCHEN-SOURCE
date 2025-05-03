@@ -24,7 +24,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QVBoxLayout,
     QPlainTextEdit, QFileDialog
 
 from src.core import utils
-from src.core.utils import v_code
+from src.core.utils import v_code, gettype
 
 cwd_path = utils.prog_path
 tool_bin = os.path.join(cwd_path, 'bin', platform.system(), platform.machine())
@@ -41,8 +41,8 @@ class DropLabel(QLabel):
         self.on_drop = lambda text:print(text)
 
     def set_drop_func(self, func:callable):
-        if func.__code__.co_argcount != 1:
-            logging.warning(f"Set drop func fail!\nThe arg_count of {func.__name__} must be 1, but its {func.__code__.co_argcount}")
+        if func.__code__.co_argcount < 2:
+            logging.warning(f"Set drop func fail!\nThe arg_count of {func.__name__} must be 1 or 2(first is self), but its {func.__code__.co_argcount}")
             return 1
         self.on_drop = func
         return None
@@ -51,7 +51,14 @@ class DropLabel(QLabel):
         event.accept()
 
     def dropEvent(self, event:QDropEvent):
-        self.on_drop(event.mimeData())
+        text = event.mimeData().text()
+        if not text:
+            return
+        if '\n' in text:
+            lines = text.split('\n')
+        else:
+            lines = [text]
+        self.on_drop(lines)
         event.accept()
 
     def mousePressEvent(self, event):
@@ -78,7 +85,23 @@ class Tool(QMainWindow):
         widget = QWidget()
         widget.setLayout(self.main_layout)
         self.setCentralWidget(widget)
-
+    def dnd_file(self, files):
+        for f in files:
+            try:
+                if hasattr(f, 'decode'):
+                    f = f.decode('gbk')
+            except (Exception, BaseException):
+                logging.exception("dnd_file:decode")
+            if os.path.exists(f):
+                file_type = gettype(f)
+                if file_type == 'mpk':
+                    print("Install Mpk")
+                elif file_type not in ['fnf', 'fne', 'unknown']:
+                    print("")
+                else:
+                    print(f"{f}[{file_type}] not supported.")
+            else:
+                print(self.tr(f'{f} not exist.'))
     def log_area_content(self):
         time_show = QLabel('MIO-KITCHEN')
         ft = QFont()
@@ -90,7 +113,7 @@ class Tool(QMainWindow):
         drag_and_drop = DropLabel("Drop URL / Path / FileName Here.")
         drag_and_drop.setMinimumHeight(80)
         drag_and_drop.setMinimumWidth(240)
-        drag_and_drop.set_drop_func(lambda :...)
+        drag_and_drop.set_drop_func(self.dnd_file)
         self.log_area.addWidget(time_show)
         self.log_area.addWidget(drag_and_drop)
         drag_and_drop.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -138,7 +161,7 @@ def init(args: list):
     sys.stderr = StdoutRedirector(window.log_output, is_error=True)
 
     if args:
-        print(args)
+        pass
     window.show()
     app.exec()
 
