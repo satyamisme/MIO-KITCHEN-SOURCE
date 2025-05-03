@@ -1,13 +1,38 @@
+#!/bin/python3
+# Copyright (C) 2022-2025 The MIO-KITCHEN-SOURCE Project
+#
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.gnu.org/licenses/agpl-3.0.en.html#license-text
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+import logging
+import os
+import platform
 import sys
 import time
 
-from PyQt6.QtCore import Qt, QTimer, QMimeData
+from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QTextCursor, QFont, QDropEvent
 from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QVBoxLayout, QTabWidget, QLabel, QWidget, \
-    QPlainTextEdit
+    QPlainTextEdit, QFileDialog
 
+from src.core import utils
+from src.core.utils import v_code
 
-
+cwd_path = utils.prog_path
+tool_bin = os.path.join(cwd_path, 'bin', platform.system(), platform.machine())
+tool_self = os.path.normpath(os.path.abspath(sys.argv[0]))
+temp = os.path.join(cwd_path, "bin", "temp").replace(os.sep, '/')
+tool_log = f'{temp}/{time.strftime("%Y%m%d_%H-%M-%S", time.localtime())}_{v_code()}.log'
+logging.basicConfig(level=logging.DEBUG, format='%(levelname)s:%(asctime)s:%(filename)s:%(name)s:%(message)s',
+                        filename=tool_log, filemode='w')
 # Custom Controls
 class DropLabel(QLabel):
     def __init__(self, *args, **kwargs):
@@ -17,8 +42,10 @@ class DropLabel(QLabel):
 
     def set_drop_func(self, func:callable):
         if func.__code__.co_argcount != 1:
-            print(f"Set drop func fail!\nThe arg_count of {func.__name__} must be 1, but its {func.__code__.co_argcount}")
+            logging.warning(f"Set drop func fail!\nThe arg_count of {func.__name__} must be 1, but its {func.__code__.co_argcount}")
+            return 1
         self.on_drop = func
+        return None
 
     def dragEnterEvent(self, event):
         event.accept()
@@ -29,10 +56,10 @@ class DropLabel(QLabel):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
-            print("Left button pressed")
-        elif event.button() == Qt.MouseButton.RightButton:
-            print("Right button pressed")
-
+            file_name_dialog = QFileDialog()
+            file_name_dialog.setWindowTitle("Choose files")
+            file_names, _ = file_name_dialog.getOpenFileNames()
+            self.on_drop(file_names)
 # Main Class
 class Tool(QMainWindow):
     def __init__(self):
@@ -105,12 +132,13 @@ class StdoutRedirector:
 
 
 def init(args: list):
-    if args:
-        print(args)
     app = QApplication(sys.argv)
     window = Tool()
     sys.stdout = StdoutRedirector(window.log_output)
     sys.stderr = StdoutRedirector(window.log_output, is_error=True)
+
+    if args:
+        print(args)
     window.show()
     app.exec()
 
