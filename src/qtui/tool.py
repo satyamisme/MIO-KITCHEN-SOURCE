@@ -31,9 +31,6 @@ tool_bin = os.path.join(cwd_path, 'bin', platform.system(), platform.machine())
 tool_self = os.path.normpath(os.path.abspath(sys.argv[0]))
 temp = os.path.join(cwd_path, "bin", "temp").replace(os.sep, '/')
 tool_log = f'{temp}/{time.strftime("%Y%m%d_%H-%M-%S", time.localtime())}_{v_code()}.log'
-if not os.path.exists(tool_log):
-    os.makedirs(os.path.dirname(tool_log), exist_ok=True)
-    open(tool_log,'w').close()
 logging.basicConfig(level=logging.DEBUG, format='%(levelname)s:%(asctime)s:%(filename)s:%(name)s:%(message)s',
                     filename=tool_log, filemode='w')
 
