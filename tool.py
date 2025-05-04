@@ -16,8 +16,7 @@ import sys
 if sys.version_info.major < 3:
     print("Mio-Kitchen requires Python 3.8.3 at least.\nUpdate your python please.")
     sys.exit(1)
-else:
-    if sys.version_info.minor < 8 and sys.version_info.major == 3:
+elif sys.version_info.minor < 8 and sys.version_info.major == 3:
         input(
             "Not supported: [{version}] yet\nEnter to quit\nSorry for any inconvenience caused".format(version=sys.version))
         sys.exit(1)
