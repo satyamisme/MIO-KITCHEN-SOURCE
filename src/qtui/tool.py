@@ -31,18 +31,24 @@ tool_bin = os.path.join(cwd_path, 'bin', platform.system(), platform.machine())
 tool_self = os.path.normpath(os.path.abspath(sys.argv[0]))
 temp = os.path.join(cwd_path, "bin", "temp").replace(os.sep, '/')
 tool_log = f'{temp}/{time.strftime("%Y%m%d_%H-%M-%S", time.localtime())}_{v_code()}.log'
+if not os.path.exists(tool_log):
+    os.makedirs(os.path.dirname(tool_log), exist_ok=True)
+    open(tool_log,'w').close()
 logging.basicConfig(level=logging.DEBUG, format='%(levelname)s:%(asctime)s:%(filename)s:%(name)s:%(message)s',
-                        filename=tool_log, filemode='w')
+                    filename=tool_log, filemode='w')
+
+
 # Custom Controls
 class DropLabel(QLabel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setStyleSheet("border: 2px dashed grey;")
-        self.on_drop = lambda text:print(text)
+        self.on_drop = lambda text: print(text)
 
-    def set_drop_func(self, func:callable):
+    def set_drop_func(self, func: callable):
         if func.__code__.co_argcount < 2:
-            logging.warning(f"Set drop func fail!\nThe arg_count of {func.__name__} must be 1 or 2(first is self), but its {func.__code__.co_argcount}")
+            logging.warning(
+                f"Set drop func fail!\nThe arg_count of {func.__name__} must be 1 or 2(first is self), but its {func.__code__.co_argcount}")
             return 1
         self.on_drop = func
         return None
@@ -50,7 +56,7 @@ class DropLabel(QLabel):
     def dragEnterEvent(self, event):
         event.accept()
 
-    def dropEvent(self, event:QDropEvent):
+    def dropEvent(self, event: QDropEvent):
         text = event.mimeData().text()
         if not text:
             return
@@ -67,6 +73,8 @@ class DropLabel(QLabel):
             file_name_dialog.setWindowTitle("Choose files")
             file_names, _ = file_name_dialog.getOpenFileNames()
             self.on_drop(file_names)
+
+
 # Main Class
 class Tool(QMainWindow):
     def __init__(self):
@@ -85,7 +93,8 @@ class Tool(QMainWindow):
         widget = QWidget()
         widget.setLayout(self.main_layout)
         self.setCentralWidget(widget)
-    def dnd_file(self, files):
+
+    def dnd_file(self, files: list[str]):
         for f in files:
             try:
                 if hasattr(f, 'decode'):
@@ -100,8 +109,11 @@ class Tool(QMainWindow):
                     print("")
                 else:
                     print(f"{f}[{file_type}] not supported.")
+            elif f.startswith('http'):
+                print(f"this is a url{f}")
             else:
                 print(self.tr(f'{f} not exist.'))
+
     def log_area_content(self):
         time_show = QLabel('MIO-KITCHEN')
         ft = QFont()
