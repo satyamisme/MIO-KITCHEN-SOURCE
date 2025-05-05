@@ -5,7 +5,7 @@ permissions:
 on:
   push:
     paths:
-      - "bin/setting.ini"
+      - "bin/build_flag"
   workflow_dispatch:
 jobs:
   build:
