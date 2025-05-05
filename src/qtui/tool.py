@@ -162,16 +162,25 @@ class Tool(QMainWindow):
         show_timer = QTimer(self)
         show_timer.timeout.connect(lambda: time_show.setText(time.strftime("%H:%M:%S")))
         self.timers.add(show_timer)
-
+    def func_area_about(self):
+        """Tab 4"""
+        layout = QHBoxLayout()
+        title_font = QFont()
+        title_font.setPointSize(20)
+        title = QLabel("MIO-KITCHEN")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setFont(title_font)
+        layout.addWidget(title)
+        widget = QWidget()
+        widget.setLayout(layout)
+        return widget
     def func_area_content(self):
         tabs = QTabWidget()
-        self.func_area.addWidget(
-            tabs
-        )
+        self.func_area.addWidget(tabs)
         tabs.setMovable(True)
-
-        for n, color in enumerate(["red", "green", "blue", "yellow"]):
-            tabs.addTab(QLabel(color), str(n))
+        tabs.addTab(self.func_area_about(), "About")
+        #for n, color in enumerate(["red", "green", "blue", "yellow"]):
+           # tabs.addTab(QLabel(color), str(n))
 
     def start_timers(self):
         for i in self.timers:
