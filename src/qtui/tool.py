@@ -25,7 +25,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QVBoxLayout,
 
 from src.core import utils
 from src.core.utils import v_code, gettype
-
+import toml
 cwd_path = utils.prog_path
 tool_bin = os.path.join(cwd_path, 'bin', platform.system(), platform.machine())
 tool_self = os.path.normpath(os.path.abspath(sys.argv[0]))
@@ -34,6 +34,36 @@ tool_log = f'{temp}/{time.strftime("%Y%m%d_%H-%M-%S", time.localtime())}_{v_code
 logging.basicConfig(level=logging.DEBUG, format='%(levelname)s:%(asctime)s:%(filename)s:%(name)s:%(message)s',
                     filename=tool_log, filemode='w')
 
+class Settings:
+    def __init__(self, set_file:str=None):
+        super().__init__()
+        self.data:dict = {}
+        if set_file:
+            self.set_file = set_file
+        else:
+            self.set_file = os.path.join(cwd_path, "bin", "setting.ini")
+        if not os.path.exists(self.set_file):
+            raise FileNotFoundError(f"{self.set_file} not exist.")
+    def load(self):
+        with open(self.set_file, 'r', encoding='utf-8') as f:
+            self.data = toml.load(f)
+            self.data = self.data.get("setting")
+            if self.data is None:
+                raise ValueError("Settings is empty.")
+    def save(self):
+        with open(self.set_file, 'w', encoding='utf-8', newline='\n') as f:
+            data = {"setting":self.data}
+            toml.dump(data, f)
+        self.load()
+
+    def get(self, name:str=None):
+        return self.data.get(name)
+
+    def set(self, name, value):
+        self.data[name] = value
+        self.save()
+
+settings = Settings()
 
 # Custom Controls
 class DropLabel(QLabel):
@@ -165,10 +195,10 @@ class StdoutRedirector:
 
 def init(args: list):
     app = QApplication(sys.argv)
+    settings.load()
     window = Tool()
     sys.stdout = StdoutRedirector(window.log_output)
     sys.stderr = StdoutRedirector(window.log_output, is_error=True)
-
     if args:
         pass
     window.show()

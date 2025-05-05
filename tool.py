@@ -16,7 +16,7 @@
 # It's must support python 2
 import sys
 
-if sys.version_info.major < 3 or ( sys.version_info.minor <8 and sys.version_info.major == 3 ):
+if sys.version_info.major < 3 or (sys.version_info.minor < 8 and sys.version_info.major == 3):
     print("Mio-Kitchen requires Python 3.8.3 at least.\nUpdate your python please.")
     sys.exit(1)
 
