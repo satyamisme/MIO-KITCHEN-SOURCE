@@ -19,11 +19,11 @@ import sys
 import time
 
 from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtGui import QTextCursor, QFont, QDropEvent
+from PyQt6.QtGui import QTextCursor, QFont, QDropEvent, QIcon, QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QVBoxLayout, QTabWidget, QLabel, QWidget, \
     QPlainTextEdit, QFileDialog
 
-from src.core import utils
+from src.core import utils, images
 from src.core.utils import v_code, gettype
 import toml
 cwd_path = utils.prog_path
@@ -109,6 +109,9 @@ class Tool(QMainWindow):
         self.log_output = None
         self.timers = set()
         self.setWindowTitle('MIO-KITCHEN')
+        pixmap = QPixmap()
+        pixmap.loadFromData(images.icon_byte)
+        self.setWindowIcon(QIcon(pixmap))
         self.main_layout = QHBoxLayout()
         self.log_area = QVBoxLayout()
         self.func_area = QVBoxLayout()
