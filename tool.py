@@ -12,14 +12,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# Do not try to change it.
+# It's must support python 2
 import sys
-if sys.version_info.major < 3:
+
+if sys.version_info.major < 3 or ( sys.version_info.minor <8 and sys.version_info.major == 3 ):
     print("Mio-Kitchen requires Python 3.8.3 at least.\nUpdate your python please.")
     sys.exit(1)
-elif sys.version_info.minor < 8 and sys.version_info.major == 3:
-        input(
-            "Not supported: [{version}] yet\nEnter to quit\nSorry for any inconvenience caused".format(version=sys.version))
-        sys.exit(1)
+
 try:
     from src.qtui.tool import *
 except Exception as e:
