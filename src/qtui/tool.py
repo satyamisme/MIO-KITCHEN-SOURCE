@@ -109,9 +109,6 @@ class Tool(QMainWindow):
         self.log_output = None
         self.timers = set()
         self.setWindowTitle('MIO-KITCHEN')
-        pixmap = QPixmap()
-        pixmap.loadFromData(images.icon_byte)
-        self.setWindowIcon(QIcon(pixmap))
         self.main_layout = QHBoxLayout()
         self.log_area = QVBoxLayout()
         self.func_area = QVBoxLayout()
@@ -198,6 +195,9 @@ class StdoutRedirector:
 
 def init(args: list):
     app = QApplication(sys.argv)
+    pixmap = QPixmap()
+    pixmap.loadFromData(images.icon_byte)
+    app.setWindowIcon(QIcon(pixmap))
     settings.load()
     window = Tool()
     sys.stdout = StdoutRedirector(window.log_output)
