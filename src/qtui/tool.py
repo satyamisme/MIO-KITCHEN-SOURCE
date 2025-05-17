@@ -18,10 +18,11 @@ import platform
 import sys
 import time
 
+from PyQt6 import QtCore
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QTextCursor, QFont, QDropEvent, QIcon, QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QVBoxLayout, QTabWidget, QLabel, QWidget, \
-    QPlainTextEdit, QFileDialog
+    QPlainTextEdit, QFileDialog, QPushButton, QDialog
 
 from src.core import utils, images
 from src.core.utils import v_code, gettype
@@ -164,21 +165,83 @@ class Tool(QMainWindow):
         self.timers.add(show_timer)
     def func_area_about(self):
         """Tab 4"""
-        layout = QHBoxLayout()
-        title_font = QFont()
-        title_font.setPointSize(20)
-        title = QLabel("MIO-KITCHEN")
+        layout = QVBoxLayout()
+        # Title
+        layout_title = QVBoxLayout()
+        title = QLabel()
+        title.setText(
+            f'''
+            <h2 align="center">MIO-KITCHEN</h2>
+            <h4 align="center">Focus on Android Rom modification</h4>
+            '''
+        )
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        title.setFont(title_font)
-        layout.addWidget(title)
-        widget = QWidget()
+        title.setStyleSheet("border:2px dashed grey;border-radius:20px;")
+        title.setMaximumWidth(350)
+        title.setMinimumWidth(350)
+        title.setMaximumHeight(110)
+        layout_title.addWidget(title)
+        widget_title = QWidget()
+        widget_title.setLayout(layout_title)
+        # Info
+        title2_layout = QHBoxLayout()
+
+        version_show = QLabel()
+        version_show.setText(f"""
+        <h3 align='center'>Version:<br>{settings.get('version')}</br></h3>
+""")
+        version_show.setStyleSheet("border:2px dashed grey;border-radius:20px;")
+        version_show.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        version_show.setMaximumWidth(180)
+        version_show.setMaximumHeight(110)
+
+        os_show = QLabel()
+        os_show.setText(f"""
+                <h3 align='center'>Operating System:<br>{platform.system()}</br></h3>
+                """)
+        os_show.setStyleSheet("border:2px dashed grey;border-radius:20px;")
+        os_show.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        os_show.setMaximumWidth(180)
+        os_show.setMaximumHeight(110)
+        title2_layout.addWidget(version_show)
+        title2_layout.addWidget(os_show)
+        widget_title2 = QWidget()
+        widget_title2.setMaximumWidth(360)
+        widget_title2.setLayout(title2_layout)
+        #
+        widget_title3_layout = QVBoxLayout()
+        arch_show = QLabel()
+        arch_show.setText(f"Arch: \t{platform.machine()}")
+        arch_show.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        pyver_show = QLabel()
+        pyver_show.setText(f"Python Version: \t{platform.python_version()}")
+        pyver_show.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        widget_title3_layout.addWidget(arch_show)
+        widget_title3_layout.addWidget(pyver_show)
+        widget_title3 = QWidget()
+        widget_title3.setLayout(widget_title3_layout)
+        #
+        widget = QDialog()
+        widget.setMaximumWidth(400)
+        layout.addWidget(widget_title)
+        layout.addWidget(widget_title2)
+        layout.addWidget(widget_title3)
+        layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         widget.setLayout(layout)
-        return widget
+        widget.setWindowFlags(QtCore.Qt.WindowType.Window)
+        widget.setWindowTitle("About")
+        widget.setFixedSize(widget.width(), widget.height())
+        widget.exec()
+
     def func_area_content(self):
         tabs = QTabWidget()
         self.func_area.addWidget(tabs)
         tabs.setMovable(True)
-        tabs.addTab(self.func_area_about(), "About")
+        button = QPushButton("About")
+        button.clicked.connect(self.func_area_about)
+        tabs.addTab(button, "About")
+        tabs.addTab(QLabel('9'), "About")
+
         #for n, color in enumerate(["red", "green", "blue", "yellow"]):
            # tabs.addTab(QLabel(color), str(n))
 
