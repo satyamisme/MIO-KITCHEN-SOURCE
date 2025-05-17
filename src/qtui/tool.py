@@ -210,14 +210,22 @@ class Tool(QMainWindow):
         widget_title2.setLayout(title2_layout)
         #
         widget_title3_layout = QVBoxLayout()
-        arch_show = QLabel()
-        arch_show.setText(f"Arch: \t{platform.machine()}")
-        arch_show.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        pyver_show = QLabel()
-        pyver_show.setText(f"Python Version: \t{platform.python_version()}")
-        pyver_show.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        widget_title3_layout.addWidget(arch_show)
-        widget_title3_layout.addWidget(pyver_show)
+        for k, v in (
+            ('Arch', platform.machine()),
+            ('Python Version', platform.python_version())
+        ):
+            widget_show_layout = QHBoxLayout()
+            key_show = QLabel()
+            key_show.setText(k)
+            key_show.setAlignment(Qt.AlignmentFlag.AlignLeft)
+            value_show = QLabel()
+            value_show.setText(v)
+            value_show.setAlignment(Qt.AlignmentFlag.AlignRight)
+            widget_show_layout.addWidget(key_show)
+            widget_show_layout.addWidget(value_show)
+            widget_show = QWidget()
+            widget_show.setLayout(widget_show_layout)
+            widget_title3_layout.addWidget(widget_show)
         widget_title3 = QWidget()
         widget_title3.setLayout(widget_title3_layout)
         #
