@@ -175,10 +175,8 @@ class Builder:
                 # 遍历文件夹中的所有文件和子文件夹
                 for root, _, files in os.walk(abs_folder_path):
                     for file in files:
-                        if file == name:
-                            continue
                         file_path = os.path.join(root, file)
-                        if ".git" in file_path:
+                        if file == name or '.git' in file_path:
                             continue
                         print(f"Adding: {file_path}")
                         # 将文件添加到zip文件中
